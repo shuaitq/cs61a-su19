@@ -23,7 +23,16 @@ def roll_dice(num_rolls, dice=six_sided):
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
     # END PROBLEM 1
-
+    array = []
+    for i in range(num_rolls):
+        array.append(dice())
+    if 1 in array:
+        return 1
+    else:
+        sum = 0
+        for num in array:
+            sum += num
+        return sum
 
 def free_bacon(score):
     """Return the points scored from rolling 0 dice (Free Bacon).
@@ -35,6 +44,12 @@ def free_bacon(score):
     "*** YOUR CODE HERE ***"
     # END PROBLEM 2
 
+    ten = 0
+    one = 0
+    if score >= 10:
+        ten = score // 10
+    one = score % 10
+    return 10 - min(one, ten)
 
 def take_turn(num_rolls, opponent_score, dice=six_sided):
     """Simulate a turn rolling NUM_ROLLS dice, which may be 0 (Free Bacon).
@@ -52,6 +67,10 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
     # END PROBLEM 3
+    if num_rolls == 0:
+        return free_bacon(opponent_score)
+    else:
+        return roll_dice(num_rolls, dice)
 
 
 def is_swap(player_score, opponent_score):
@@ -61,6 +80,14 @@ def is_swap(player_score, opponent_score):
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
     # END PROBLEM 4
+    right = opponent_score % 10
+    div = 1
+    if player_score >= 100:
+        div = 100
+    elif player_score >= 10:
+        div = 10
+
+    return player_score // div == right
 
 
 def other(player):
@@ -99,6 +126,25 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     player = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    while score0 < goal and score1 < goal:
+        if player == 0:
+            num = strategy0(score0, score1)
+            score0 += take_turn(num, score1, dice)
+            if is_swap(score0, score1):
+                tmp = score0
+                score0 = score1
+                score1 = tmp
+        else:
+            num = strategy1(score1, score0)
+            score1 += take_turn(num, score0, dice)
+            if is_swap(score1, score0):
+                tmp = score0
+                score0 = score1
+                score1 = tmp
+        
+
+        player = other(player)
+
     # END PROBLEM 5
     # (note that the indentation for the problem 6 prompt (***YOUR CODE HERE***) might be misleading)
     # BEGIN PROBLEM 6
